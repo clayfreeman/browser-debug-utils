@@ -1,0 +1,42 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types = 1);
+
+function usage(?string $error = NULL): void {
+  $message = $error !== NULL ? "ERROR: {$error}" . \PHP_EOL : '';
+  $message = $message . "Usage: {$GLOBALS['argv'][0]} FILENAME [XPATH]" . \PHP_EOL;
+
+  \fputs(\STDERR, \trim($message) . \PHP_EOL);
+  exit(1);
+}
+
+if (!\file_exists($argv[1] ?? '')) {
+  \usage('Please specify a file in which to replace outlined styles.');
+}
+
+$document = new \DOMDocument();
+
+@$document->loadHTMLFile($argv[1]);
+$xpath = new \DOMXPath($document);
+
+/** @var \DOMNode[] */
+$remove_nodes = [];
+
+/** @var \DOMNode[] */
+if ($result = @$xpath->query($argv[2] ?? '//link[@rel="stylesheet" and @href]')) {
+  foreach ($result as $node) {
+    $remove_nodes[] = $node;
+  }
+}
+
+foreach ($remove_nodes as $node) {
+  echo "Removing {$node->attributes->getNamedItem('href')->nodeValue} ... " . \PHP_EOL;
+  $node->parentNode->removeChild($node);
+}
+
+$style = $document->createElement('style', \file_get_contents('php://stdin'));
+
+echo 'Inserting style from STDIN ...' . \PHP_EOL;
+$document->prepend($style);
+$document->saveHTMLFile($argv[1]);

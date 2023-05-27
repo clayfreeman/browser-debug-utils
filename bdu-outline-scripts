@@ -1,0 +1,54 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types = 1);
+
+function usage(?string $error = NULL): void {
+  $message = $error !== NULL ? "ERROR: {$error}" . \PHP_EOL : '';
+  $message = $message . "Usage: {$GLOBALS['argv'][0]} FILENAME [XPATH]" . \PHP_EOL;
+
+  \fputs(\STDERR, \trim($message) . \PHP_EOL);
+  exit(1);
+}
+
+if (!\file_exists($argv[1] ?? '')) {
+  \usage('Please specify a file in which to outline scripts.');
+}
+
+$document = new \DOMDocument();
+
+@$document->loadHTMLFile($argv[1]);
+$xpath = new \DOMXPath($document);
+
+/** @var \DOMNode[] */
+$outline_nodes = [];
+
+/** @var \DOMNode[] */
+if ($result = @$xpath->query($argv[2] ?? '//script')) {
+  foreach ($result as $node) {
+    $outline_nodes[$node->getNodePath()] = $node;
+  }
+}
+
+foreach ($outline_nodes as $path => $node) {
+  if (empty($node->nodeValue)) {
+    continue;
+  }
+
+  if (!empty($node->attributes->getNamedItem('src')->nodeValue)) {
+    $node->nodeValue = '';
+    continue;
+  }
+
+  $filename = \hash('sha256', \random_bytes(32)) . '.js';
+  \file_put_contents(\dirname($argv[1]) . "/{$filename}", $node->nodeValue);
+
+  $script = $document->createElement('script');
+  $script->setAttribute('src', $filename);
+
+  echo "Outlining {$path} ... " . \PHP_EOL;
+  $node->parentNode->insertBefore($script, $node);
+  $node->parentNode->removeChild($node);
+}
+
+$document->saveHTMLFile($argv[1]);

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bdu-outline-scripts "$1"
+bdu-outline-styles "$1"
+
+uncss "$1" | bdu-replace-outlined-styles "$1"
+prettier -w "$1"

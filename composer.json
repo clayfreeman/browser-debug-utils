@@ -1,0 +1,30 @@
+{
+    "name": "clayfreeman/browser-debug-utils",
+    "description": "A collection of command-line utilities to aid in debugging browser engines.",
+    "homepage": "https://github.com/clayfreeman/browser-debug-utils",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Clay Freeman",
+            "email": "clay@librarymarket.com",
+            "homepage": "https://www.librarymarket.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "bin": [
+        "bdu-outline-styles",
+        "bdu-remove-scripts",
+        "bdu-prepare",
+        "bdu-replace-outlined-styles"
+    ],
+    "config": {
+        "sort-packages": true,
+        "discard-changes": true
+    },
+    "require": {
+        "php": ">=7.2",
+        "ext-xml": "*"
+    }
+}
