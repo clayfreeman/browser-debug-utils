@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+function usage() {
+  if [ -n "${1:-}" ]
+  then
+    echo >&2 ERROR: "${1}".
+    echo >&2
+  fi
+
+  echo >&2 Usage: "${0}" FILENAME
+  exit 1
+}
+
+if [ -z "${1:-}" ]
+then
+  usage "Please specify an input file."
+fi
+
 bdu-outline-scripts "$1"
 bdu-outline-styles "$1"
 

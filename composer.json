@@ -14,8 +14,8 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "bin": [
+        "bdu-outline-scripts",
         "bdu-outline-styles",
-        "bdu-remove-scripts",
         "bdu-prepare",
         "bdu-replace-outlined-styles"
     ],
